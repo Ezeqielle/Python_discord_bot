@@ -3,6 +3,12 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+#my ignorations
+*.code-workspace
+token.txt
+src
+log*
+
 # User-specific files
 *.rsuser
 *.suo
