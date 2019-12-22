@@ -12,25 +12,6 @@ def read_token():
 token = read_token()
 client = discord.Client()
 
-#prise de log du serveur discord
-async def update_stats():
-    await client.wait_until_ready()
-    global messages, joined
-
-    while not client.is_closed():
-        try :
-            with open("log.txt", "a") as f:
-                f.write(f"Time: {int(time.time())}, Messages: {messages}, Members Joined: {joined}\n")
-            
-            messages = 0
-            joined = 0
-
-            await asyncio.sleep(5)
-
-        except Exception as e:
-            print(e)
-            await asyncio.sleep(5)
-
 #quand un user rejoint le serveur
 @client.event
 async def on_member_join(member):
@@ -49,11 +30,17 @@ async def on_message(message):
     id = client.get_guild(496660517218418688)
     channels = ["testbot"]
 
+    if message.content == ">help":
+        help = discord.Embed(title = "Help Bot", description = "Quelques commandes utiles")
+        help.add_field(name = ">hello", value = "greets the user")
+        help.add_field(name = ">users", value = "prints numbers of users")
+        await message.channel.send(content = None, embed = help)
+
     if str(message.channel) in channels:
         if message.content.find(">hello") != -1:
             await message.channel.send("Hi")
         elif message.content == ">users":
-            await message.channel.send(f"""# of Members: {id.members_count}""")
+            await message.channel.send(f"""# of Members: {id.member_count}""")
     else:
         print(f"""User: {message.author} tried to do command {message.content}, in channel {message.channel}""")
 
