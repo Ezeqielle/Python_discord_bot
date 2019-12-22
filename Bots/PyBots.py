@@ -37,13 +37,18 @@ async def purge(ctx):
         await msg.delete()
 
 @bot.command()
+async def duplicate(ctx):
+    dupl = ctx.channel
+    await dupl.clone()
+
+@bot.command()
 async def help(ctx):
     help_list = discord.Embed(colour = discord.Colour.red())
     help_list.set_author(name = "Command Helper")
-    help_list.add_field(name = "__**>help**__", value = "All commands and how use them", inline = False)
+    help_list.add_field(name = "__**>help**__", value = "Display all commands and how use them", inline = False)
     help_list.add_field(name = "__**>roll**__", value = ">roll NdN | done N roll between 1 and N", inline = False)
-    help_list.add_field(name = "__**>purge**__", value = "Delete all messages in the channel where the command was send (require admin role)", inline = False)
-    help_list.add_field(name = "__**>othercommand**__", value = "other explaination", inline = False)
+    help_list.add_field(name = "__**>purge**__", value = "Delete all messages in the channel where command was sent (require admin role)", inline = False)
+    help_list.add_field(name = "__**>duplicate**__", value = "Duplicate the channel where command was sent", inline = False)
     
     await ctx.send(embed = help_list)
 
