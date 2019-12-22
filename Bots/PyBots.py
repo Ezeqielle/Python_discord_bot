@@ -46,5 +46,4 @@ async def on_message(message):
 
 
 #last lines
-client.loop.create_task(update_stats())
 client.run(token)
