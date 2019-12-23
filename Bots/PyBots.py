@@ -33,7 +33,7 @@ async def roll(ctx, dice: str):
     await ctx.send(author+' rolled a **'+result+'**')
 
 @bot.command()
-@commands.has_role('admin')
+@commands.has_any_role('admin', 'Admin')
 async def purge(ctx):
     async for msg in ctx.channel.history(limit = None):
         await msg.delete()
