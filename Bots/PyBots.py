@@ -35,8 +35,11 @@ async def roll(ctx, dice: str):
 @bot.command()
 @commands.has_any_role('admin', 'Admin')
 async def purge(ctx):
-    async for msg in ctx.channel.history(limit = None):
-        await msg.delete()
+    old = ctx.channel
+    pos_old = ctx.channel.position
+    purged = await old.clone()
+    await purged.edit(position = pos_old + 1)
+    await old.delete()
 @purge.error
 async def purge_error(ctx, error):
     if isinstance(error, commands.errors.MissingRole): 
@@ -45,7 +48,18 @@ async def purge_error(ctx, error):
 @bot.command()
 async def duplicate(ctx):
     dupl = ctx.channel
-    await dupl.clone()
+    pos = ctx.channel.position
+    new = await dupl.clone()
+    await new.edit(position = pos + 1)
+
+@bot.command()
+@commands.has_any_role('Admin', 'admin')
+async def resetRole():
+    ""
+@resetRole.error
+async def resetRole_error(ctx, error):
+    if isinstance(error, commands.errors.MissingRole): 
+        await ctx.send('> **Can\'t do that! You don\'t have admin role. Please ask an admin to send command or give you admin role.**')
 
 @bot.command()
 async def help(ctx):
@@ -55,6 +69,7 @@ async def help(ctx):
     help_list.add_field(name = "__**>roll NdN**__", value = "Done N roll between 1 and N", inline = False)
     help_list.add_field(name = "__**>purge**__", value = "Delete all messages in the channel where command was sent (require admin role)", inline = False)
     help_list.add_field(name = "__**>duplicate**__", value = "Duplicate the channel where command was sent", inline = False)
+    help_list.add_field(name = "__**>resetRole**__", value = "Reset specific role for everyone on this guild", inline = False)
     
     await ctx.send(embed = help_list)
 
