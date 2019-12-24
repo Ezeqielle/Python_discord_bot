@@ -20,6 +20,7 @@ async def on_ready():
     print(bot.user.name)
     print(bot.user.id)
     print('----------')
+    await bot.change_presence(status=discord.Status.online, activity=discord.Game("Too powerfull BOT"))
 
 @bot.command()
 async def roll(ctx, dice: str):
@@ -59,6 +60,7 @@ async def resetMS(ctx):
     for role in ctx.guild.roles:
         if ms in role.name:
             for member in role.members:
+                await asyncio.sleep(1)
                 await member.remove_roles(role)
 @resetMS.error
 async def resetRole_error(ctx, error):
