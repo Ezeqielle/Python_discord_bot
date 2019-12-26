@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from discord.utils import find
 import random
 import time
 import asyncio
@@ -10,10 +11,10 @@ def read_token():
         return lines[0].strip()
 
 token = read_token()
-
 bot = commands.Bot(command_prefix = '>')
 bot.remove_command('help')
 
+#on ready
 @bot.event
 async def on_ready():
     print('Logged in as')
@@ -22,6 +23,24 @@ async def on_ready():
     print('----------')
     await bot.change_presence(status=discord.Status.online, activity=discord.Game("Too powerfull BOT"))
 
+#on join
+@bot.event
+async def on_guild_join(guild):
+    general  = find(lambda x: x.name == 'general', guild.text_channels)
+    if general and general.permissions_for(guild.me).send_messages:
+        await general.send('**Hello {}! Thanks to report to the >help command for list all commands and configure the bot.**'.format(guild.name))
+
+#setup
+@bot.command()
+@commands.has_any_role('admin', 'Admin')
+async def setup(ctx):
+    print('> please enter the name of your guild between <>')
+@setup.error
+async def setup_error(ctx, error):
+    if isinstance(error, commands.errors.MissingRole): 
+        await ctx.send('> **Can\'t do that! You don\'t have admin role. Please ask an admin to send command or give you admin role.**')
+
+#roll
 @bot.command()
 async def roll(ctx, dice: str):
     try:
@@ -33,6 +52,7 @@ async def roll(ctx, dice: str):
     author = ctx.author.name
     await ctx.send('> '+author+' rolled a **'+result+'**')
 
+#purge
 @bot.command()
 @commands.has_any_role('admin', 'Admin')
 async def purge(ctx):
@@ -46,6 +66,7 @@ async def purge_error(ctx, error):
     if isinstance(error, commands.errors.MissingRole): 
         await ctx.send('> **Can\'t do that! You don\'t have admin role. Please ask an admin to send command or give you admin role.**')
 
+#duplicate
 @bot.command()
 async def duplicate(ctx):
     dupl = ctx.channel
@@ -53,6 +74,7 @@ async def duplicate(ctx):
     new = await dupl.clone()
     await new.edit(position = pos + 1)
 
+#resetMS
 @bot.command()
 @commands.has_any_role('Admin', 'admin')
 async def resetMS(ctx):
@@ -67,15 +89,32 @@ async def resetRole_error(ctx, error):
     if isinstance(error, commands.errors.MissingRole): 
         await ctx.send('> **Can\'t do that! You don\'t have admin role. Please ask an admin to send command or give you admin role.**')
 
+#poll
+@bot.command()
+async def poll(ctx):
+    #demander le nombre de reponse possible
+    #demander la question
+    #demander les possibilités separere par |
+    # affichier la question et les reponses dans un embed
+    #emoji :one: -> :seven:
+    ""
+
+#help
 @bot.command()
 async def help(ctx):
     help_list = discord.Embed(colour = discord.Colour.red())
     help_list.set_author(name = "Command Helper")
-    help_list.add_field(name = "__**>help**__", value = "Display all commands and how use them", inline = False)
-    help_list.add_field(name = "__**>roll NdN**__", value = "Done N roll between 1 and N", inline = False)
-    help_list.add_field(name = "__**>purge**__", value = "Delete all messages in the channel where command was sent (require admin role)", inline = False)
-    help_list.add_field(name = "__**>duplicate**__", value = "Duplicate the channel where command was sent", inline = False)
-    help_list.add_field(name = "__**>resetMS**__", value = "Reset Mythic Score for everyone (require admin role)", inline = False)
+    help_list.add_field(name = "__**REQUIREMENT**__", value = "You need to have a role named admin or Admin for use admin only commands!!", inline = False)
+    #users commands
+    help_list.add_field(name = "__**USERS commands : **__", value = "Commands for all members", inline = False)
+    help_list.add_field(name = "**>help**", value = "Display all commands and how use them", inline = False)
+    help_list.add_field(name = "**>roll NdN**", value = "Done N roll between 1 and N", inline = False)
+    help_list.add_field(name = "**>duplicate**", value = "Duplicate the channel where command was sent", inline = False)
+    #admin only commands
+    help_list.add_field(name = "__**ADMIN only commands : **__", value = "Commands only for admin", inline = False)
+    help_list.add_field(name = "**>setup**", value = "Start BOT setup for this guild (require admin role)", inline = False)
+    help_list.add_field(name = "**>purge**", value = "Delete all messages in the channel where command was sent (require admin role)", inline = False)
+    help_list.add_field(name = "**>resetMS**", value = "Reset Mythic Score for everyone (require admin role)", inline = False)
     
     await ctx.send(embed = help_list)
 
