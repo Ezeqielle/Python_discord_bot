@@ -115,6 +115,7 @@ async def poll(ctx):
         await react_message.add_reaction(reaction)
     embed.set_footer(text = 'Poll request by: {}'.format(ctx.message.author))
     await react_message.edit(embed = embed)
+    await ctx.message.delete()
 
 #help
 @bot.command()
