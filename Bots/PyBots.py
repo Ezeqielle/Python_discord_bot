@@ -91,13 +91,33 @@ async def resetRole_error(ctx, error):
 
 #poll
 @bot.command()
-async def poll(ctx):
-    #demander le nombre de reponse possible
-    #demander la question
-    #demander les possibilités separere par |
-    # affichier la question et les reponses dans un embed
-    #emoji :one: -> :seven:
-    ""
+async def poll(ctx, message):
+    poll = ctx.message.content
+    print(poll)
+    poll = poll.split('<')
+    question = poll[0].split(' ')
+    question = question[1]
+    print(question)
+    answers = poll[1].split('|')
+    print(answers)
+    lenght = len(answers)
+    print(lenght)
+    if lenght > 7:
+        await ctx.send('You can\'t make a poll for more than 7 things!!')
+        return
+    if lenght == 2 and answers[0] == ' yes ' and answers[1] == ' no':
+        reactions = ['✅', '❌']
+    else:
+        reactions = ['1⃣', '2⃣', '3⃣', '4⃣', '5⃣', '6⃣', '7⃣']
+    description = []
+    for x, answer in enumerate(answers):
+        description += '\n {} {}'.format(reactions[x], answer)
+    embed = discord.Embed(title = question, description = ''.join(description))
+    react_message = await ctx.send(embed = embed)
+    for reaction in reactions[:len(answers)]:
+        await ctx.message.add_reaction(react_message, reaction)
+    embed.set_footer(text = 'Poll ID: {}'.format(react_message.id))
+    await ctx.edit_message(react_message, embed = embed)
 
 #help
 @bot.command()
@@ -110,6 +130,7 @@ async def help(ctx):
     help_list.add_field(name = "**>help**", value = "Display all commands and how use them", inline = False)
     help_list.add_field(name = "**>roll NdN**", value = "Done N roll between 1 and N", inline = False)
     help_list.add_field(name = "**>duplicate**", value = "Duplicate the channel where command was sent", inline = False)
+    help_list.add_field(name = "**>poll question < answer1 | ... | answer7**", value = "Done a poll request where command was sent", inline = False)
     #admin only commands
     help_list.add_field(name = "__**ADMIN only commands : **__", value = "Commands only for admin", inline = False)
     help_list.add_field(name = "**>setup**", value = "Start BOT setup for this guild (require admin role)", inline = False)
