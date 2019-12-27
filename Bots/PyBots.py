@@ -91,17 +91,14 @@ async def resetRole_error(ctx, error):
 
 #poll
 @bot.command()
-async def poll(ctx, message):
+async def poll(ctx):
     poll = ctx.message.content
-    print(poll)
     poll = poll.split('<')
     question = poll[0].split(' ')
-    question = question[1]
-    print(question)
+    del question[0]
+    question = ' '.join(question)
     answers = poll[1].split('|')
-    print(answers)
     lenght = len(answers)
-    print(lenght)
     if lenght > 7:
         await ctx.send('You can\'t make a poll for more than 7 things!!')
         return
@@ -115,9 +112,9 @@ async def poll(ctx, message):
     embed = discord.Embed(title = question, description = ''.join(description))
     react_message = await ctx.send(embed = embed)
     for reaction in reactions[:len(answers)]:
-        await ctx.message.add_reaction(react_message, reaction)
-    embed.set_footer(text = 'Poll ID: {}'.format(react_message.id))
-    await ctx.edit_message(react_message, embed = embed)
+        await react_message.add_reaction(reaction)
+    embed.set_footer(text = 'Poll request by: {}'.format(ctx.message.author))
+    await react_message.edit(embed = embed)
 
 #help
 @bot.command()
