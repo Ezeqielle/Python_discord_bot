@@ -18,9 +18,9 @@ bot.remove_command('help')
 @bot.event
 async def on_ready():
     print('Logged in as')
-    print(bot.user.name)
-    print(bot.user.id)
-    print('----------')
+    print('Name : '+bot.user.name)
+    print('ID   : '+str(bot.user.id))
+    print('-------------------------')
     await bot.change_presence(status=discord.Status.online, activity=discord.Game("Too powerfull BOT"))
 
 #on join
