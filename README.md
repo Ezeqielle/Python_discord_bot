@@ -17,5 +17,4 @@ all feature usable by admin only:
 
 Coming soon :
 -
-+ specifique seting for a guild (discord server)
 + connection with battle.net api
