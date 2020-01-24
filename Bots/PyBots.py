@@ -1,46 +1,55 @@
+# python 3
+
 import discord
 from discord.ext import commands
 from discord.utils import find
 import random
-import time
 import asyncio
+
 
 def read_token():
     with open("token.txt", "r") as f:
         lines = f.readlines()
         return lines[0].strip()
 
+
 token = read_token()
-bot = commands.Bot(command_prefix = '>')
+bot = commands.Bot(command_prefix='>')
 bot.remove_command('help')
 
-#on ready
+
+# on ready
 @bot.event
 async def on_ready():
     print('Logged in as')
-    print('Name : '+bot.user.name)
-    print('ID   : '+str(bot.user.id))
+    print('Name : ' + bot.user.name)
+    print('ID   : ' + str(bot.user.id))
     print('-------------------------')
-    await bot.change_presence(status=discord.Status.online, activity=discord.Game("Too powerfull BOT"))
+    await bot.change_presence(status=discord.Status.online, activity=discord.Game("for help write >help"))
 
-#on join
+
+# on join
 @bot.event
 async def on_guild_join(guild):
-    general  = find(lambda x: x.name == 'general', guild.text_channels)
+    general = find(lambda x: x.name == 'general', guild.text_channels)
     if general and general.permissions_for(guild.me).send_messages:
         await general.send('**Hello {}! Thanks to report to the >help command for list all commands and configure the bot.**'.format(guild.name))
 
-#setup
+
+# setup
 @bot.command()
 @commands.has_any_role('admin', 'Admin')
 async def setup(ctx):
     print('> please enter the name of your guild between <>')
+
+
 @setup.error
-async def setup_error(ctx, error):
-    if isinstance(error, commands.errors.MissingRole): 
+async def setup_error(ctx, error): 
+    if isinstance(error, commands.errors.MissingRole):
         await ctx.send('> **Can\'t do that! You don\'t have admin role. Please ask an admin to send command or give you admin role.**')
 
-#roll
+
+# roll
 @bot.command()
 async def roll(ctx, dice: str):
     try:
@@ -50,31 +59,36 @@ async def roll(ctx, dice: str):
         return
     result = ', '.join(str(random.randint(1, limit)) for r in range(rolls))
     author = ctx.author.name
-    await ctx.send('> '+author+' rolled a **'+result+'**')
+    await ctx.send('> ' + author + ' rolled a **' + result + '**')
 
-#purge
+
+# purge
 @bot.command()
 @commands.has_any_role('admin', 'Admin')
 async def purge(ctx):
     old = ctx.channel
     pos_old = ctx.channel.position
     purged = await old.clone()
-    await purged.edit(position = pos_old)
+    await purged.edit(position=pos_old)
     await old.delete()
+
+
 @purge.error
 async def purge_error(ctx, error):
-    if isinstance(error, commands.errors.MissingRole): 
+    if isinstance(error, commands.errors.MissingRole):
         await ctx.send('> **Can\'t do that! You don\'t have admin role. Please ask an admin to send command or give you admin role.**')
 
-#duplicate
+
+# duplicate
 @bot.command()
 async def duplicate(ctx):
     dupl = ctx.channel
     pos = ctx.channel.position
     new = await dupl.clone()
-    await new.edit(position = pos + 1)
+    await new.edit(position=pos + 1)
 
-#resetMS
+
+# resetMS
 @bot.command()
 @commands.has_any_role('Admin', 'admin')
 async def resetMS(ctx):
@@ -84,12 +98,15 @@ async def resetMS(ctx):
             for member in role.members:
                 await asyncio.sleep(1)
                 await member.remove_roles(role)
+
+
 @resetMS.error
 async def resetRole_error(ctx, error):
-    if isinstance(error, commands.errors.MissingRole): 
+    if isinstance(error, commands.errors.MissingRole):
         await ctx.send('> **Can\'t do that! You don\'t have admin role. Please ask an admin to send command or give you admin role.**')
 
-#poll
+
+# poll
 @bot.command()
 async def poll(ctx):
     poll = ctx.message.content
@@ -98,44 +115,122 @@ async def poll(ctx):
     del question[0]
     question = ' '.join(question)
     answers = poll[1].split('|')
-    lenght = len(answers)
-    if lenght > 7:
+    length = len(answers)
+    if length > 7:
         await ctx.send('You can\'t make a poll for more than 7 things!!')
         return
-    if lenght == 2 and answers[0] == ' yes ' and answers[1] == ' no':
+    if length == 2 and answers[0] == ' yes ' and answers[1] == ' no':
         reactions = ['✅', '❌']
     else:
         reactions = ['1⃣', '2⃣', '3⃣', '4⃣', '5⃣', '6⃣', '7⃣']
     description = []
     for x, answer in enumerate(answers):
         description += '\n {} {}'.format(reactions[x], answer)
-    embed = discord.Embed(title = question, description = ''.join(description))
-    react_message = await ctx.send(embed = embed)
+    embed = discord.Embed(title=question, description=''.join(description))
+    react_message = await ctx.send(embed=embed)
     for reaction in reactions[:len(answers)]:
         await react_message.add_reaction(reaction)
-    embed.set_footer(text = 'Poll request by: {}'.format(ctx.message.author))
-    await react_message.edit(embed = embed)
+    embed.set_footer(text='Poll request by: {}'.format(ctx.message.author))
+    await react_message.edit(embed=embed)
     await ctx.message.delete()
 
-#help
+
+# set role by reaction
+@bot.command()
+@commands.has_any_role('Admin', 'admin')
+async def role(ctx):
+    getRole = ctx.message.content
+    getRole = getRole.split(':')
+    message = getRole[0].split(' ')
+    del message[0]
+    message = ' '.join(message)
+    choices = getRole[1].split("|")
+    length = len(choices)
+    tmp = getRole[1].split(".")
+    reactions = []
+    i = 0
+    for i in enumerate(tmp):
+        reactions = reactions.append(tmp[i])
+        i += 2
+    roleGived = []
+    y = 1
+    for y in enumerate(tmp):
+        roleGived = roleGived.append(tmp[y])
+        y += 2
+    description = []
+    for x, choice in enumerate(choices):
+        description += '\n {} {}'.format(reactions[x], choice)
+    embed = discord.Embed(title=message, description=''.join(description))
+    react_message = await ctx.send(embed=embed)
+    for reaction in reactions:
+        await react_message.add_reaction(reaction)
+    embed.set_footer(text='Request by: {}'.format(ctx.message.author))
+    await react_message.edit(embed=embed)
+    await ctx.message.delete()
+    await giveRoleByReaction(reactions)
+    # add react for take a role
+    # custom reaction + name role
+    # same reaction in embed and embed reaction
+
+
+@bot.event
+async def giveRoleByReaction(reaction, ctx, reactions):
+    if reaction.emoji in reactions:
+        for role in ctx.guild.roles:
+            print("soon here")
+
+'''
+@bot.event
+async def on_ready():
+    Channel = client.get_channel('YOUR_CHANNEL_ID')
+    Text= "YOUR_MESSAGE_HERE"
+    Moji = await client.send_message(Channel, Text)
+    await client.add_reaction(Moji, emoji='🏃')
+@bot.event
+async def on_reaction_add(reaction, user):
+    Channel = client.get_channel('YOUR_CHANNEL_ID')
+    if reaction.message.channel.id != Channel
+    return
+    if reaction.emoji == "🏃":
+      Role = discord.utils.get(user.server.roles, name="YOUR_ROLE_NAME_HERE")
+      await client.add_roles(user, Role)
+'''
+
+
+# test commande
+#@bot.command()
+#async def test(ctx):
+#    await ctx.send(":thumbsup:")
+
+
+# help
 @bot.command()
 async def help(ctx):
-    help_list = discord.Embed(colour = discord.Colour.red())
-    help_list.set_author(name = "Command Helper")
-    help_list.add_field(name = "__**REQUIREMENT**__", value = "You need to have a role named admin or Admin for use admin only commands!!", inline = False)
-    #users commands
-    help_list.add_field(name = "__**USERS commands : **__", value = "Commands for all members", inline = False)
-    help_list.add_field(name = "**>help**", value = "Display all commands and how use them", inline = False)
-    help_list.add_field(name = "**>roll NdN**", value = "Done N roll between 1 and N", inline = False)
-    help_list.add_field(name = "**>duplicate**", value = "Duplicate the channel where command was sent", inline = False)
-    help_list.add_field(name = "**>poll question < answer1 | ... | answer7**", value = "Done a poll request where command was sent", inline = False)
-    #admin only commands
-    help_list.add_field(name = "__**ADMIN only commands : **__", value = "Commands only for admin", inline = False)
-    help_list.add_field(name = "**>setup**", value = "Start BOT setup for this guild (require admin role)", inline = False)
-    help_list.add_field(name = "**>purge**", value = "Delete all messages in the channel where command was sent (require admin role)", inline = False)
-    help_list.add_field(name = "**>resetMS**", value = "Reset Mythic Score for everyone (require admin role)", inline = False)
-    
-    await ctx.send(embed = help_list)
+    help_list = discord.Embed(colour=discord.Colour.red())
+    help_list.set_author(name="Command Helper")
+    help_list.add_field(name="__**REQUIREMENT**__",
+                        value="You need to have a role named admin or Admin for use admin only commands!!",
+                        inline=False)
+    # users commands
+    help_list.add_field(name="__**USERS commands : **__", value="Commands for all members", inline=False)
+    help_list.add_field(name="**>help**", value="Display all commands and how use them", inline=False)
+    help_list.add_field(name="**>roll NdN**", value="Done N roll between 1 and N", inline=False)
+    help_list.add_field(name="**>duplicate**", value="Duplicate the channel where command was sent", inline=False)
+    help_list.add_field(name="**>poll question < answer1 | ... | answer7**",
+                        value="Done a poll request where command was sent", inline=False)
+    # admin only commands
+    help_list.add_field(name="__**ADMIN only commands : **__", value="Commands only for admin", inline=False)
+    help_list.add_field(name="**>setup**", value="Start BOT setup for this guild (require admin role)", inline=False)
+    help_list.add_field(name="**>purge**",
+                        value="Delete all messages in the channel where command was sent (require admin role)",
+                        inline=False)
+    help_list.add_field(name="**>role message: .emoji.choice | .emoji.choice | ... | .emoji.choice**",
+                        value="Give role by react at an embed (require admin role)",
+                        inline=False)
+    help_list.add_field(name="**>resetMS**", value="Reset Mythic Score for everyone (require admin role)", inline=False)
 
-#last line
+    await ctx.send(embed=help_list)
+
+
+# last line
 bot.run(token)
