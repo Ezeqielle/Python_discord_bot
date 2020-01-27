@@ -11,6 +11,7 @@ src
 log*
 /.idea
 /.vscode
+*_old.*
 
 
 # User-specific files
