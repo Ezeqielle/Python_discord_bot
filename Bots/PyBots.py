@@ -34,7 +34,9 @@ async def on_ready():
 async def on_guild_join(guild):
     general = find(lambda x: x.name == 'general', guild.text_channels)
     if general and general.permissions_for(guild.me).send_messages:
-        await general.send('**Hello {}! Thanks to report to the >help command for list all commands and configure the bot.**'.format(guild.name))
+        await general.send(
+            '**Hello {}! Thanks to report to the >help command for list all commands and configure the bot.**'.format(
+                guild.name))
 
 
 # setup
@@ -47,7 +49,8 @@ async def setup(ctx):
 @setup.error
 async def setup_error(ctx, error):
     if isinstance(error, commands.errors.MissingRole):
-        await ctx.send('> **Can\'t do that! You don\'t have admin role. Please ask an admin to send command or give you admin role.**')
+        await ctx.send(
+            '> **Can\'t do that! You don\'t have admin role. Please ask an admin to send command or give you admin role.**')
 
 
 # roll
@@ -77,7 +80,8 @@ async def purge(ctx):
 @purge.error
 async def purge_error(ctx, error):
     if isinstance(error, commands.errors.MissingRole):
-        await ctx.send('> **Can\'t do that! You don\'t have admin role. Please ask an admin to send command or give you admin role.**')
+        await ctx.send(
+            '> **Can\'t do that! You don\'t have admin role. Please ask an admin to send command or give you admin role.**')
 
 
 # duplicate
@@ -102,7 +106,7 @@ async def resetMS(ctx):
 
 
 @resetMS.error
-async def resetRole_error(ctx, error):
+async def resetMS_error(ctx, error):
     if isinstance(error, commands.errors.MissingRole):
         await ctx.send('> **Can\'t do that! You don\'t have admin role. Please ask an admin to send command or give you admin role.**')
 
@@ -145,23 +149,16 @@ async def role(ctx):
     message = getRole[0].split(' ')
     del message[0]
     message = ' '.join(message)
-    choices = getRole[1].split("|")
-    length = len(choices)
     reactions = []
     description = []
-    i = 0
+    choices = getRole[1].split("|")
     try:
-        for emoji in re.findall('<:(.+?)>', message.content):
-            reactions.append(f'<:{emoji}>')
+        for emoji in re.findall('<:(.?+):>', ctx.message.content):
+            reactions.append(f'<:{emoji}:>')
     except:
         print('no custom emojis')
-    try:
-        for emoji in re.findall(' :(.+?): ', message.content):
-            reactions.append(f':{emoji}:')
-    except:
-        print('no normal emojis')
-    print(reactions)
-    for x, choice in enumerate(choices):
+    print(str(reactions))
+    for choice in enumerate(choices):
         description += '\n {}'.format(choice)
     embed = discord.Embed(title=message, description=''.join(description))
     react_message = await ctx.send(embed=embed)
@@ -170,7 +167,8 @@ async def role(ctx):
     embed.set_footer(text='Request by: {}'.format(ctx.message.author))
     await react_message.edit(embed=embed)
     await ctx.message.delete()
-    #await giveRoleByReaction(reactions)
+    print(choices)
+    # await giveRoleByReaction(reactions)
     # add react for take a role
     # custom reaction + name role
     # same reaction in embed and embed reaction
@@ -240,7 +238,7 @@ async def help(ctx):
                         value="Delete all messages in the channel where command was sent (require admin role)",
                         inline=False)
     help_list.add_field(name="**>role message: .emoji.choice | .emoji.choice | ... | .emoji.choice**",
-                        value="Give role by react at an embed you need to write the role name like in your role manager (require admin role)",
+                        value="Give role by react at an embed you need to write the role name like in your role manager (work only with custom emoji and require admin role)",
                         inline=False)
     help_list.add_field(name="**>resetMS**",
                         value="Reset Mythic Score for everyone (require admin role)",
