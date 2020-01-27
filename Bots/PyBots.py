@@ -33,7 +33,9 @@ async def on_ready():
 async def on_guild_join(guild):
     general = find(lambda x: x.name == 'general', guild.text_channels)
     if general and general.permissions_for(guild.me).send_messages:
-        await general.send('**Hello {}! Thanks to report to the >help command for list all commands and configure the bot.**'.format(guild.name))
+        await general.send(
+            '**Hello {}! Thanks to report to the >help command for list all commands and configure the bot.**'.format(
+                guild.name))
 
 
 # setup
@@ -44,9 +46,10 @@ async def setup(ctx):
 
 
 @setup.error
-async def setup_error(ctx, error): 
+async def setup_error(ctx, error):
     if isinstance(error, commands.errors.MissingRole):
-        await ctx.send('> **Can\'t do that! You don\'t have admin role. Please ask an admin to send command or give you admin role.**')
+        await ctx.send(
+            '> **Can\'t do that! You don\'t have admin role. Please ask an admin to send command or give you admin role.**')
 
 
 # roll
@@ -76,7 +79,8 @@ async def purge(ctx):
 @purge.error
 async def purge_error(ctx, error):
     if isinstance(error, commands.errors.MissingRole):
-        await ctx.send('> **Can\'t do that! You don\'t have admin role. Please ask an admin to send command or give you admin role.**')
+        await ctx.send(
+            '> **Can\'t do that! You don\'t have admin role. Please ask an admin to send command or give you admin role.**')
 
 
 # duplicate
@@ -103,7 +107,8 @@ async def resetMS(ctx):
 @resetMS.error
 async def resetRole_error(ctx, error):
     if isinstance(error, commands.errors.MissingRole):
-        await ctx.send('> **Can\'t do that! You don\'t have admin role. Please ask an admin to send command or give you admin role.**')
+        await ctx.send(
+            '> **Can\'t do that! You don\'t have admin role. Please ask an admin to send command or give you admin role.**')
 
 
 # poll
@@ -179,6 +184,7 @@ async def giveRoleByReaction(reaction, ctx, reactions):
         for role in ctx.guild.roles:
             print("soon here")
 
+
 '''
 @bot.event
 async def on_ready():
@@ -198,8 +204,8 @@ async def on_reaction_add(reaction, user):
 
 
 # test commande
-#@bot.command()
-#async def test(ctx):
+# @bot.command()
+# async def test(ctx):
 #    await ctx.send(":thumbsup:")
 
 
@@ -220,15 +226,16 @@ async def help(ctx):
                         value="Done a poll request where command was sent", inline=False)
     # admin only commands
     help_list.add_field(name="__**ADMIN only commands : **__", value="Commands only for admin", inline=False)
-    help_list.add_field(name="**>setup**", value="Start BOT setup for this guild (require admin role)", inline=False)
+    # help_list.add_field(name="**>setup**", value="Start BOT setup for this guild (require admin role)", inline=False)
     help_list.add_field(name="**>purge**",
                         value="Delete all messages in the channel where command was sent (require admin role)",
                         inline=False)
     help_list.add_field(name="**>role message: .emoji.choice | .emoji.choice | ... | .emoji.choice**",
-                        value="Give role by react at an embed (require admin role)",
+                        value="Give role by react at an embed you need to write the role name like in your role manager (require admin role)",
                         inline=False)
     help_list.add_field(name="**>resetMS**", value="Reset Mythic Score for everyone (require admin role)", inline=False)
 
+    help_list.set_footer(text='Github: https://github.com/Ezeqielle/Python_discord_bot')
     await ctx.send(embed=help_list)
 
 
