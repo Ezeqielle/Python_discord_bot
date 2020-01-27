@@ -5,6 +5,7 @@ from discord.ext import commands
 from discord.utils import find
 import random
 import asyncio
+import re
 
 
 def read_token():
@@ -33,9 +34,7 @@ async def on_ready():
 async def on_guild_join(guild):
     general = find(lambda x: x.name == 'general', guild.text_channels)
     if general and general.permissions_for(guild.me).send_messages:
-        await general.send(
-            '**Hello {}! Thanks to report to the >help command for list all commands and configure the bot.**'.format(
-                guild.name))
+        await general.send('**Hello {}! Thanks to report to the >help command for list all commands and configure the bot.**'.format(guild.name))
 
 
 # setup
@@ -48,8 +47,7 @@ async def setup(ctx):
 @setup.error
 async def setup_error(ctx, error):
     if isinstance(error, commands.errors.MissingRole):
-        await ctx.send(
-            '> **Can\'t do that! You don\'t have admin role. Please ask an admin to send command or give you admin role.**')
+        await ctx.send('> **Can\'t do that! You don\'t have admin role. Please ask an admin to send command or give you admin role.**')
 
 
 # roll
@@ -79,8 +77,7 @@ async def purge(ctx):
 @purge.error
 async def purge_error(ctx, error):
     if isinstance(error, commands.errors.MissingRole):
-        await ctx.send(
-            '> **Can\'t do that! You don\'t have admin role. Please ask an admin to send command or give you admin role.**')
+        await ctx.send('> **Can\'t do that! You don\'t have admin role. Please ask an admin to send command or give you admin role.**')
 
 
 # duplicate
@@ -107,8 +104,7 @@ async def resetMS(ctx):
 @resetMS.error
 async def resetRole_error(ctx, error):
     if isinstance(error, commands.errors.MissingRole):
-        await ctx.send(
-            '> **Can\'t do that! You don\'t have admin role. Please ask an admin to send command or give you admin role.**')
+        await ctx.send('> **Can\'t do that! You don\'t have admin role. Please ask an admin to send command or give you admin role.**')
 
 
 # poll
@@ -145,26 +141,28 @@ async def poll(ctx):
 @commands.has_any_role('Admin', 'admin')
 async def role(ctx):
     getRole = ctx.message.content
-    getRole = getRole.split(':')
+    getRole = getRole.split(';')
     message = getRole[0].split(' ')
     del message[0]
     message = ' '.join(message)
     choices = getRole[1].split("|")
     length = len(choices)
-    tmp = getRole[1].split(".")
     reactions = []
-    i = 0
-    for i in enumerate(tmp):
-        reactions = reactions.append(tmp[i])
-        i += 2
-    roleGived = []
-    y = 1
-    for y in enumerate(tmp):
-        roleGived = roleGived.append(tmp[y])
-        y += 2
     description = []
+    i = 0
+    try:
+        for emoji in re.findall('<:(.+?)>', message.content):
+            reactions.append(f'<:{emoji}>')
+    except:
+        print('no custom emojis')
+    try:
+        for emoji in re.findall(' :(.+?): ', message.content):
+            reactions.append(f':{emoji}:')
+    except:
+        print('no normal emojis')
+    print(reactions)
     for x, choice in enumerate(choices):
-        description += '\n {} {}'.format(reactions[x], choice)
+        description += '\n {}'.format(choice)
     embed = discord.Embed(title=message, description=''.join(description))
     react_message = await ctx.send(embed=embed)
     for reaction in reactions:
@@ -172,7 +170,7 @@ async def role(ctx):
     embed.set_footer(text='Request by: {}'.format(ctx.message.author))
     await react_message.edit(embed=embed)
     await ctx.message.delete()
-    await giveRoleByReaction(reactions)
+    #await giveRoleByReaction(reactions)
     # add react for take a role
     # custom reaction + name role
     # same reaction in embed and embed reaction
@@ -218,14 +216,25 @@ async def help(ctx):
                         value="You need to have a role named admin or Admin for use admin only commands!!",
                         inline=False)
     # users commands
-    help_list.add_field(name="__**USERS commands : **__", value="Commands for all members", inline=False)
-    help_list.add_field(name="**>help**", value="Display all commands and how use them", inline=False)
-    help_list.add_field(name="**>roll NdN**", value="Done N roll between 1 and N", inline=False)
-    help_list.add_field(name="**>duplicate**", value="Duplicate the channel where command was sent", inline=False)
+    help_list.add_field(name="__**USERS commands : **__",
+                        value="Commands for all members",
+                        inline=False)
+    help_list.add_field(name="**>help**",
+                        value="Display all commands and how use them",
+                        inline=False)
+    help_list.add_field(name="**>roll NdN**",
+                        value="Done N roll between 1 and N",
+                        inline=False)
+    help_list.add_field(name="**>duplicate**",
+                        value="Duplicate the channel where command was sent",
+                        inline=False)
     help_list.add_field(name="**>poll question < answer1 | ... | answer7**",
-                        value="Done a poll request where command was sent", inline=False)
+                        value="Done a poll request where command was sent",
+                        inline=False)
     # admin only commands
-    help_list.add_field(name="__**ADMIN only commands : **__", value="Commands only for admin", inline=False)
+    help_list.add_field(name="__**ADMIN only commands : **__",
+                        value="Commands only for admin",
+                        inline=False)
     # help_list.add_field(name="**>setup**", value="Start BOT setup for this guild (require admin role)", inline=False)
     help_list.add_field(name="**>purge**",
                         value="Delete all messages in the channel where command was sent (require admin role)",
@@ -233,7 +242,9 @@ async def help(ctx):
     help_list.add_field(name="**>role message: .emoji.choice | .emoji.choice | ... | .emoji.choice**",
                         value="Give role by react at an embed you need to write the role name like in your role manager (require admin role)",
                         inline=False)
-    help_list.add_field(name="**>resetMS**", value="Reset Mythic Score for everyone (require admin role)", inline=False)
+    help_list.add_field(name="**>resetMS**",
+                        value="Reset Mythic Score for everyone (require admin role)",
+                        inline=False)
 
     help_list.set_footer(text='Github: https://github.com/Ezeqielle/Python_discord_bot')
     await ctx.send(embed=help_list)
