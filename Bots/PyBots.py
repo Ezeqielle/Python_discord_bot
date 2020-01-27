@@ -153,12 +153,11 @@ async def role(ctx):
     description = []
     choices = getRole[1].split("|")
     try:
-        for emoji in re.findall('<:(.?+):>', ctx.message.content):
-            reactions.append(f'<:{emoji}:>')
+        for emoji in re.findall('<:(.+?)>', ctx.message.content):
+            reactions.append(f'<:{emoji}>')
     except:
         print('no custom emojis')
-    print(str(reactions))
-    for choice in enumerate(choices):
+    for choice in choices:
         description += '\n {}'.format(choice)
     embed = discord.Embed(title=message, description=''.join(description))
     react_message = await ctx.send(embed=embed)
@@ -167,7 +166,6 @@ async def role(ctx):
     embed.set_footer(text='Request by: {}'.format(ctx.message.author))
     await react_message.edit(embed=embed)
     await ctx.message.delete()
-    print(choices)
     # await giveRoleByReaction(reactions)
     # add react for take a role
     # custom reaction + name role
@@ -237,7 +235,7 @@ async def help(ctx):
     help_list.add_field(name="**>purge**",
                         value="Delete all messages in the channel where command was sent (require admin role)",
                         inline=False)
-    help_list.add_field(name="**>role message: .emoji.choice | .emoji.choice | ... | .emoji.choice**",
+    help_list.add_field(name="**>role message; :emoji: choice | :emoji: choice | ... | :emoji: choice**",
                         value="Give role by react at an embed you need to write the role name like in your role manager (work only with custom emoji and require admin role)",
                         inline=False)
     help_list.add_field(name="**>resetMS**",
