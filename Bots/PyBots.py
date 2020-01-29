@@ -34,9 +34,7 @@ async def on_ready():
 async def on_guild_join(guild):
     general = find(lambda x: x.name == 'general', guild.text_channels)
     if general and general.permissions_for(guild.me).send_messages:
-        await general.send(
-            '**Hello {}! Thanks to report to the >help command for list all commands and configure the bot.**'.format(
-                guild.name))
+        await general.send('**Hello {}! Thanks to report to the >help command for list all commands and configure the bot.**'.format(guild.name))
 
 
 # setup
@@ -49,8 +47,7 @@ async def setup(ctx):
 @setup.error
 async def setup_error(ctx, error):
     if isinstance(error, commands.errors.MissingRole):
-        await ctx.send(
-            '> **Can\'t do that! You don\'t have admin role. Please ask an admin to send command or give you admin role.**')
+        await ctx.send('> **Can\'t do that! You don\'t have admin role. Please ask an admin to send command or give you admin role.**')
 
 
 # roll
@@ -80,8 +77,7 @@ async def purge(ctx):
 @purge.error
 async def purge_error(ctx, error):
     if isinstance(error, commands.errors.MissingRole):
-        await ctx.send(
-            '> **Can\'t do that! You don\'t have admin role. Please ask an admin to send command or give you admin role.**')
+        await ctx.send('> **Can\'t do that! You don\'t have admin role. Please ask an admin to send command or give you admin role.**')
 
 
 # duplicate
@@ -143,7 +139,7 @@ async def poll(ctx):
 # set role by reaction
 @bot.command()
 @commands.has_any_role('Admin', 'admin')
-async def role(ctx):
+async def role(ctx, user, reaction):
     getRole = ctx.message.content
     getRole = getRole.split(';')
     message = getRole[0].split(' ')
@@ -161,23 +157,23 @@ async def role(ctx):
         description += '\n {}'.format(choice)
     embed = discord.Embed(title=message, description=''.join(description))
     react_message = await ctx.send(embed=embed)
-    for reaction in reactions:
-        await react_message.add_reaction(reaction)
+    for react in reactions:
+        await react_message.add_reaction(react)
     embed.set_footer(text='Request by: {}'.format(ctx.message.author))
     await react_message.edit(embed=embed)
     await ctx.message.delete()
-    # await giveRoleByReaction(reactions)
-    # add react for take a role
-    # custom reaction + name role
-    # same reaction in embed and embed reaction
-
-
-@bot.event
-async def giveRoleByReaction(reaction, ctx, reactions):
-    if reaction.emoji in reactions:
-        for role in ctx.guild.roles:
-            print("soon here")
-
+    tmp = getRole[1].split(' ')
+    print(tmp)
+    roleList = []
+    removeList = ['', '<', '|']
+    for element in tmp:
+        if element not in removeList:
+            if element.isalpha():
+                roleList.append(element)
+    print('roleList: ', roleList)
+    for user in reaction.user():
+        role = discord.utils.get(user.server.roles, name=)
+        await bot.add_roles(user, role)
 
 '''
 @bot.event
@@ -195,14 +191,6 @@ async def on_reaction_add(reaction, user):
       Role = discord.utils.get(user.server.roles, name="YOUR_ROLE_NAME_HERE")
       await client.add_roles(user, Role)
 '''
-
-
-# test commande
-# @bot.command()
-# async def test(ctx):
-#    await ctx.send(":thumbsup:")
-
-
 # help
 @bot.command()
 async def help(ctx):
@@ -242,7 +230,7 @@ async def help(ctx):
                         value="Reset Mythic Score for everyone (require admin role)",
                         inline=False)
 
-    help_list.set_footer(text='Github: https://github.com/Ezeqielle/Python_discord_bot')
+    help_list.set_footer(text='https://github.com/Ezeqielle/Python_discord_bot')
     await ctx.send(embed=help_list)
 
 
