@@ -34,7 +34,9 @@ async def on_ready():
 async def on_guild_join(guild):
     general = find(lambda x: x.name == 'general', guild.text_channels)
     if general and general.permissions_for(guild.me).send_messages:
-        await general.send('**Hello {}! Thanks to report to the >help command for list all commands and configure the bot.**'.format(guild.name))
+        await general.send(
+            '**Hello {}! Thanks to report to the >help command for list all commands and configure the bot.**'.format(
+                guild.name))
 
 
 # setup
@@ -47,7 +49,8 @@ async def setup(ctx):
 @setup.error
 async def setup_error(ctx, error):
     if isinstance(error, commands.errors.MissingRole):
-        await ctx.send('> **Can\'t do that! You don\'t have admin role. Please ask an admin to send command or give you admin role.**')
+        await ctx.send(
+            '> **Can\'t do that! You don\'t have admin role. Please ask an admin to send command or give you admin role.**')
 
 
 # roll
@@ -77,7 +80,8 @@ async def purge(ctx):
 @purge.error
 async def purge_error(ctx, error):
     if isinstance(error, commands.errors.MissingRole):
-        await ctx.send('> **Can\'t do that! You don\'t have admin role. Please ask an admin to send command or give you admin role.**')
+        await ctx.send(
+            '> **Can\'t do that! You don\'t have admin role. Please ask an admin to send command or give you admin role.**')
 
 
 # duplicate
@@ -104,7 +108,8 @@ async def resetMS(ctx):
 @resetMS.error
 async def resetMS_error(ctx, error):
     if isinstance(error, commands.errors.MissingRole):
-        await ctx.send('> **Can\'t do that! You don\'t have admin role. Please ask an admin to send command or give you admin role.**')
+        await ctx.send(
+            '> **Can\'t do that! You don\'t have admin role. Please ask an admin to send command or give you admin role.**')
 
 
 # poll
@@ -171,9 +176,11 @@ async def role(ctx, user, reaction):
             if element.isalpha():
                 roleList.append(element)
     print('roleList: ', roleList)
-    for user in reaction.user():
-        role = discord.utils.get(user.server.roles, name=)
-        await bot.add_roles(user, role)
+    for x, moji in enumerate(reactions):
+        if reaction.emoji == moji:
+            role = discord.utils.get(user.server.roles, name=roleList[x].name)
+            await bot.add_roles(user, role)
+
 
 '''
 @bot.event
@@ -191,6 +198,8 @@ async def on_reaction_add(reaction, user):
       Role = discord.utils.get(user.server.roles, name="YOUR_ROLE_NAME_HERE")
       await client.add_roles(user, Role)
 '''
+
+
 # help
 @bot.command()
 async def help(ctx):
