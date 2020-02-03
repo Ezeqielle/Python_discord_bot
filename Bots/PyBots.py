@@ -176,6 +176,7 @@ async def role(ctx, user, reaction):
             if element.isalpha():
                 roleList.append(element)
     print('roleList: ', roleList)
+    await ctx.add_reaction(emoji=reactions)
     for x, moji in enumerate(reactions):
         if reaction.emoji == moji:
             role = discord.utils.get(user.server.roles, name=roleList[x].name)
@@ -198,6 +199,13 @@ async def on_reaction_add(reaction, user):
       Role = discord.utils.get(user.server.roles, name="YOUR_ROLE_NAME_HERE")
       await client.add_roles(user, Role)
 '''
+
+
+@bot.command()
+async def avatar(ctx, member: discord.Member):
+    show_avatar = discord.Embed(color=discord.Color.dark_blue())
+    show_avatar.set_image(url='{}'.format(member.avatar_url))
+    await ctx.send(embed=show_avatar)
 
 
 # help
