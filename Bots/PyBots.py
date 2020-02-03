@@ -229,8 +229,8 @@ async def help(ctx):
     help_list.add_field(name="**>duplicate**",
                         value="Duplicate the channel where command was sent",
                         inline=False)
-    help_list.add_field(name="**>poll question < answer1 | ... | answer7**",
-                        value="Done a poll request where command was sent",
+    help_list.add_field(name="**>avatar @mention**",
+                        value="Show the mentioned avatar in an embed",
                         inline=False)
     # admin only commands
     help_list.add_field(name="__**ADMIN only commands : **__",
