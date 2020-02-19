@@ -15,8 +15,10 @@ all feature usable by admin only:
 -
 + purge a text channel 
 + reset Mythic Score (if enable with [Jevees](<https://www.jeeves.bot/>) bot)
++ reset a specific role
 
 Coming soon :
 -
 + add role by reaction 
 + connection with battle.net api
++ custom setup for guild

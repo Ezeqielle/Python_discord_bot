@@ -112,6 +112,28 @@ async def resetMS_error(ctx, error):
             '> **Can\'t do that! You don\'t have admin role. Please ask an admin to send command or give you admin role.**')
 
 
+# reset role
+@bot.command()
+@commands.has_any_role('Admin', 'admin')
+async def reset(ctx):
+    re = ctx.message.content
+    re = re.split(' ')
+    del re[0]
+    re = ' '.join(re)
+    for role in ctx.guild.roles:
+        if re in role.name:
+            for member in role.members:
+                await asyncio.sleep(1)
+                await member.remove_roles(role)
+
+
+@reset.error
+async def reset_error(ctx, error):
+    if isinstance(error, commands.errors.MissingRole):
+        await ctx.send(
+            '> **Can\'t do that! You don\'t have admin role. Please ask an admin to send command or give you admin role.**')
+
+
 # poll
 @bot.command()
 async def poll(ctx):
@@ -245,6 +267,9 @@ async def help(ctx):
                         inline=False)
     help_list.add_field(name="**>resetMS**",
                         value="Reset Mythic Score for everyone (require admin role)",
+                        inline=False)
+    help_list.add_field(name="**>reset role**",
+                        value="Reset role for everyone (require admin role and the bot need to have the highest role on guild for good work)",
                         inline=False)
 
     help_list.set_footer(text='https://github.com/Ezeqielle/Python_discord_bot')
