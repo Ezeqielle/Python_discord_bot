@@ -11,7 +11,6 @@ src
 log*
 /.idea
 /.vscode
-PyBots_old.py
 
 
 # User-specific files
