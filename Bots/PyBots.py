@@ -1,5 +1,13 @@
-# python 3
+# python 3.8
 
+"""
+script name : PyBots
+made by     : Ezeqielle
+description : Simply bot for discord
+"""
+
+
+# imports
 import discord
 from discord.ext import commands
 from discord.utils import find
@@ -8,12 +16,14 @@ import asyncio
 import re
 
 
+# get token
 def read_token():
     with open("token.txt", "r") as f:
         lines = f.readlines()
         return lines[0].strip()
 
 
+# initialising bot and prefix
 token = read_token()
 bot = commands.Bot(command_prefix='>')
 bot.remove_command('help')
@@ -223,6 +233,7 @@ async def on_reaction_add(reaction, user):
 '''
 
 
+# avatar
 @bot.command()
 async def avatar(ctx, member: discord.Member):
     show_avatar = discord.Embed(color=discord.Color.dark_blue())
@@ -253,6 +264,9 @@ async def help(ctx):
                         inline=False)
     help_list.add_field(name="**>avatar @mention**",
                         value="Show the mentioned avatar in an embed",
+                        inline=False)
+    help_list.add_field(name="**>poll < question | answer | answer | ... **",
+                        value="Simply poll with 2 to 7 answer possibility",
                         inline=False)
     # admin only commands
     help_list.add_field(name="__**ADMIN only commands : **__",
