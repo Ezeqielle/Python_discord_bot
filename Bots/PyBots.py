@@ -6,7 +6,6 @@ made by     : Ezeqielle
 description : Simply bot for discord
 """
 
-
 # imports
 import discord
 from discord.ext import commands

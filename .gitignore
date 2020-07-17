@@ -10,7 +10,6 @@ token_online.txt
 src
 log*
 /.idea
-/.vscode
 
 
 # User-specific files
